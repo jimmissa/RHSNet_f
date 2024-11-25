@@ -31,18 +31,7 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
                                                 test_index)
         # Data augmentation
         if args["data_augmentation"]:
-            if "science" in args["dataset"]:
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "nature_genetics_2008":
-                X_train, Y_train = nature_2008_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "nature_2020":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "mouse_cell_2016":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "yeast_2008":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            else:
-                X_train, Y_train = X_train_raw, Y_train_raw
+            X_train, Y_train = augmentation_func(X_train_raw, Y_train_raw, args)
         else:
             X_train, Y_train = X_train_raw, Y_train_raw
 
