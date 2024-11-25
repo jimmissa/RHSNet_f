@@ -5,6 +5,7 @@ import numpy as np
 import scipy.stats as stats
 from tqdm import tqdm
 from sklearn.metrics import roc_auc_score, roc_curve
+
 def Classification_Accuracy(result,logger):
     # data is a list , containing the output of 1 trail
     # len(data) = 1
@@ -191,55 +192,6 @@ def Classification_Accuracy_Distribution(args,result_filename,logger,interval=10
            np.array(Mcc_list),np.array(Recall_list),\
            np.array(Precision_list),np.array(F1_list), \
            eval_list
-
-def AU_ROC(logger,Y_test, Y_pred):
-    TP, TN, FP, FN = 0, 0, 0, 0
-    predictions = []
-    for i in range(Y_pred.shape[0]):
-        if Y_pred[i][0] > Y_pred[i][1]:
-            pred = 0
-        else:
-            pred = 1
-        predictions.append(Y_pred[i][1])
-        gt = Y_test[i]
-
-        if gt == 1 and pred == 1:
-            TP += 1
-        elif gt == 0 and pred == 0:
-            TN += 1
-        elif gt == 0 and pred == 1:
-            FP += 1
-        elif gt == 1 and pred == 0:
-            FN += 1
-    logger.info('***|\tTP\t| |\tTN\t| |\tFP\t| |\tFN\t|***')
-    logger.info('***|\t{}\t| |\t{}\t| |\t{}\t| |\t{}\t|***'.format(TP, TN, FP, FN))
-    predictions = np.array(predictions)
-    au_roc = roc_auc_score(Y_test, predictions)
-    logger.info("AUC Score : {}".format(au_roc))
-    fpr_skl, tpr_skl, thresholds_skl = roc_curve(Y_test, predictions, drop_intermediate=False)
-    skl_result = [fpr_skl, tpr_skl, au_roc]
-    return au_roc, skl_result
-
-def Get_Accuracy(TP, TN, FP, FN):
-    Sn = TP / (TP + FN)
-    Sp = TN / (TN + FP)
-    Acc = (TP + TN) / (TP + TN + FP + FN)
-    if (TP + FP)==0 or (TP + FN)==0 or (TN + FP)==0 or (TN + FN)==0:
-        MCC = -1
-    else:
-        MCC = ((TP * TN) - (FP * FN)) / ((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN)) ** 0.5
-    Recall = TP / (TP + FN)
-
-    if (TP + FP)==0:
-        Precision = 0
-    else:
-        Precision = TP / (TP + FP)
-    if Precision==0 and Recall == 0:
-        F1 = 0
-    else:
-        F1 = 2 * (Precision * Recall)/(Precision + Recall)
-
-    return Sn, Sp, Acc, MCC, Recall, Precision, F1
 
 def Log_AVG_k_folds(Sn_list, Sp_list, Acc_list,Mcc_list,Recall_list,Precision_list,F1_list,logger):
     Sn_avg = np.mean(np.array(Sn_list))
