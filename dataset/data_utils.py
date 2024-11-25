@@ -70,7 +70,7 @@ def data_augmentation(X_train,X_CHIP,Y_train):
            shuffled_X_CHIP_aug,\
            shuffled_Y
 
-def science_2019_data_augmentation(X_train, Y_train,args):
+def augmentation_func(X_train, Y_train,args):
     X_train_aug = []
     Y_train_aug = []
     with tqdm(total=X_train.shape[0]) as t:
@@ -100,66 +100,6 @@ def science_2019_data_augmentation(X_train, Y_train,args):
     shuffled_Y = Y_train_aug[permutation]
 
     return shuffled_X , shuffled_Y
-
-def nature_2008_data_augmentation(X_train, Y_train,args):
-    X_train_aug = []
-    Y_train_aug = []
-    with tqdm(total=X_train.shape[0]) as t:
-        for x, y in tqdm(zip(X_train, Y_train)):
-            len_seq = len(x.nonzero()[0])
-            # Original Data
-            X_train_aug.append(x)
-            Y_train_aug.append(y)
-            # Cropping`
-            X_train_aug.append(cropping(x, len_seq,random_seed=50))
-            Y_train_aug.append(y)
-
-            # Mutation
-            # X_train_aug.append(mutation(x,len_seq, rate=0.01))
-            # Y_train_aug.append(y)
-
-            # Mirroring & Palindrome
-            X_train_aug.append(x[::-1, ::-1])
-            Y_train_aug.append(y)
-
-            t.update()
-
-    # shuffle
-    X_train_aug = np.array(X_train_aug)
-    Y_train_aug = np.array(Y_train_aug)
-    permutation = np.random.permutation(int(X_train_aug.shape[0]))
-    shuffled_X = X_train_aug[permutation, :, :]
-    shuffled_Y = Y_train_aug[permutation]
-
-    return shuffled_X, shuffled_Y
-
-def mouse_data_augmentation(X_train, Y_train, args):
-    X_train_aug = []
-    Y_train_aug = []
-    with tqdm(total=X_train.shape[0]) as t:
-        for x, y in tqdm(zip(X_train, Y_train)):
-            len_seq = len(x.nonzero()[0])
-            # Original Data
-            X_train_aug.append(x)
-            Y_train_aug.append(y)
-            # Cropping`
-            X_train_aug.append(cropping(x, len_seq, random_seed=50))
-            Y_train_aug.append(y)
-
-            # Mirroring & Palindrome
-            X_train_aug.append(x[::-1, ::-1])
-            Y_train_aug.append(y)
-
-            t.update()
-
-    # shuffle
-    X_train_aug = np.array(X_train_aug)
-    Y_train_aug = np.array(Y_train_aug)
-    permutation = np.random.permutation(int(X_train_aug.shape[0]))
-    shuffled_X = X_train_aug[permutation, :, :]
-    shuffled_Y = Y_train_aug[permutation]
-
-    return shuffled_X, shuffled_Y
 
 if __name__ == '__main__':
     args = {
