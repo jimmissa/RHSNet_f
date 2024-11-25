@@ -1,98 +1,11 @@
 import os,sys
 import numpy as np
-from dataset.data_generator import _26_Population_generator,\
-    Chromosome_2019_generator,\
-    Nature_Genetics_2008_generator,Nature_2020_generator,Yeast_2008_generator
-from dataset.mouse_generator import Mouse_Cell_2016_generator
 from dataset.transforms import cropping
 from tqdm import tqdm
 
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 data_root = os.path.join(root,'data')
 dataset_root = os.path.join(root,'dataset')
-
-def Human_Science_2019(args):
-
-    root_feature = os.path.join(dataset_root, args["dataset"],
-                                str(args["max_length"]))
-    X     = np.load(os.path.join(root_feature, 'X.npy'))
-    Y     = np.load(os.path.join(root_feature, 'Y.npy'))
-    L     = np.load(os.path.join(root_feature, 'L.npy'))
-
-    return X, Y, L
-
-def Mouse_Cell_2016(args):
-    root_feature = os.path.join(dataset_root, args["dataset"],
-                                str(args["max_length"]))
-    mat_file = os.path.join(root_feature,
-                            "X.npy")
-    if not os.path.exists(mat_file):
-        X, Y, L = Mouse_Cell_2016_generator(args)
-    else:
-        X = np.load(os.path.join(root_feature, 'X.npy'))
-        Y = np.load(os.path.join(root_feature, 'Y.npy'))
-        L = np.load(os.path.join(root_feature, 'L.npy'))
-
-    return X, Y, L
-
-
-def Nature_Genetics_2008(args):
-    data_path = os.path.join(data_root, 'nature_genetics_2008')
-    root_feature = os.path.join(dataset_root, args["dataset"],
-                                str(args["max_length"]))
-    if not os.path.exists(root_feature):
-        X, Y, L = Nature_Genetics_2008_generator(args,data_path, root_feature)
-    else:
-        X = np.load(os.path.join(root_feature, 'X.npy'))
-        Y = np.load(os.path.join(root_feature, 'Y.npy'))
-        L = np.load(os.path.join(root_feature, 'L.npy'))
-    return X, Y, L
-
-def Nature_2020(args):
-    summary_path = os.path.join(data_root, 'nature2020.json')
-
-    root_feature = os.path.join(dataset_root, args["dataset"],
-                                str(args["max_length"]))
-    if not os.path.exists(root_feature):
-        X, Y, L = Nature_2020_generator(args,summary_path,root_feature)
-    else:
-        X     = np.load(os.path.join(root_feature, 'X.npy'))
-        Y     = np.load(os.path.join(root_feature, 'Y.npy'))
-        L     = np.load(os.path.join(root_feature, 'L.npy'))
-
-    return X, Y, L
-
-def Chromosome_Human_Science_2019(args):
-    if "paternal" in args["dataset"]:
-        summary_path = os.path.join(data_root, 'paternal.json')
-        type = "paternal"
-    elif "maternal" in args["dataset"]:
-        summary_path = os.path.join(data_root, 'maternal.json')
-        type = "maternal"
-    else:
-        summary_path = os.path.join(data_root, 'paternal_maternal.json')
-        type = "paternal_maternal"
-
-    root_feature = os.path.join(dataset_root, args["dataset"],"Chromosome_Data")
-    if not os.path.exists(root_feature):
-        X, Y, L = Chromosome_2019_generator(args,summary_path,root_feature)
-    else:
-        X     = np.load(os.path.join(root_feature, 'X.npy'))
-        Y     = np.load(os.path.join(root_feature, 'Y.npy'))
-        L     = np.load(os.path.join(root_feature, 'L.npy'))
-    return X, Y, L
-
-def _26_Population(args):
-
-    root_feature = os.path.join(dataset_root, args["dataset"], str(args["max_length"]))
-    if not os.path.exists(root_feature):
-        X, Y, L = _26_Population_generator(args,root_feature)
-    else:
-        X = np.load(os.path.join(root_feature, 'X.npy'))
-        Y = np.load(os.path.join(root_feature, 'Y.npy'))
-        L = np.load(os.path.join(root_feature, 'L.npy'))
-    return X, Y, L
-
 
 def Split_Train_Val_Test_Set(X,Y,L,train_index,test_index):
     val_index = np.random.choice(train_index,size=int(0.1*len(train_index)),replace=False)
@@ -157,7 +70,7 @@ def data_augmentation(X_train,X_CHIP,Y_train):
            shuffled_X_CHIP_aug,\
            shuffled_Y
 
-def science_2019_data_augmentation(X_train, Y_train,args):
+def augmentation_func(X_train, Y_train,args):
     X_train_aug = []
     Y_train_aug = []
     with tqdm(total=X_train.shape[0]) as t:
@@ -188,65 +101,6 @@ def science_2019_data_augmentation(X_train, Y_train,args):
 
     return shuffled_X , shuffled_Y
 
-def nature_2008_data_augmentation(X_train, Y_train,args):
-    X_train_aug = []
-    Y_train_aug = []
-    with tqdm(total=X_train.shape[0]) as t:
-        for x, y in tqdm(zip(X_train, Y_train)):
-            len_seq = len(x.nonzero()[0])
-            # Original Data
-            X_train_aug.append(x)
-            Y_train_aug.append(y)
-            # Cropping`
-            X_train_aug.append(cropping(x, len_seq,random_seed=50))
-            Y_train_aug.append(y)
-
-            # Mutation
-            # X_train_aug.append(mutation(x,len_seq, rate=0.01))
-            # Y_train_aug.append(y)
-
-            # Mirroring & Palindrome
-            X_train_aug.append(x[::-1, ::-1])
-            Y_train_aug.append(y)
-
-            t.update()
-
-    # shuffle
-    X_train_aug = np.array(X_train_aug)
-    Y_train_aug = np.array(Y_train_aug)
-    permutation = np.random.permutation(int(X_train_aug.shape[0]))
-    shuffled_X = X_train_aug[permutation, :, :]
-    shuffled_Y = Y_train_aug[permutation]
-
-    return shuffled_X, shuffled_Y
-
-def mouse_data_augmentation(X_train, Y_train, args):
-    X_train_aug = []
-    Y_train_aug = []
-    with tqdm(total=X_train.shape[0]) as t:
-        for x, y in tqdm(zip(X_train, Y_train)):
-            len_seq = len(x.nonzero()[0])
-            # Original Data
-            X_train_aug.append(x)
-            Y_train_aug.append(y)
-            # Cropping`
-            X_train_aug.append(cropping(x, len_seq, random_seed=50))
-            Y_train_aug.append(y)
-
-            # Mirroring & Palindrome
-            X_train_aug.append(x[::-1, ::-1])
-            Y_train_aug.append(y)
-
-            t.update()
-
-    # shuffle
-    X_train_aug = np.array(X_train_aug)
-    Y_train_aug = np.array(Y_train_aug)
-    permutation = np.random.permutation(int(X_train_aug.shape[0]))
-    shuffled_X = X_train_aug[permutation, :, :]
-    shuffled_Y = Y_train_aug[permutation]
-
-    return shuffled_X, shuffled_Y
 
 if __name__ == '__main__':
     args = {
