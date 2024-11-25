@@ -3,7 +3,6 @@
 
 from datetime import datetime
 from keras.callbacks import TensorBoard
-from keras.models import model_from_yaml
 
 def get_log(args):
     TIMESTAMP = "{0:%Y-%m-%dT%H-%M-%S/}".format(datetime.now())
