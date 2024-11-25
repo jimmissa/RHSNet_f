@@ -3,12 +3,12 @@
 from lib.classification_models import *
 from lib.function import *
 from dataset.data_utils import *
-from lib.CNN_core import *
 from lib.Attention_core import *
 from lib.evaluation import *
-from lib.vis import *
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import KFold
+from tensorflow.keras.utils import to_categorical
+
 def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
     kf = KFold(n_splits=args["folds"])
     Sn_list, Sp_list, Acc_list, Mcc_list, \
@@ -33,18 +33,7 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
                                                 test_index)
         # Data augmentation
         if args["data_augmentation"]:
-            if "science" in args["dataset"]:
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "nature_genetics_2008":
-                X_train, Y_train = nature_2008_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "nature_2020":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "mouse_cell_2016":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            elif args["dataset"] == "yeast_2008":
-                X_train, Y_train = science_2019_data_augmentation(X_train_raw, Y_train_raw, args)
-            else:
-                X_train, Y_train = X_train_raw, Y_train_raw
+            X_train, Y_train = augmentation_func(X_train_raw, Y_train_raw, args)
         else:
             X_train, Y_train = X_train_raw, Y_train_raw
 
@@ -56,13 +45,7 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
         loss = get_loss_function(args)
 
         # Model
-        if args["model"] == 'CNN':
-            model = CNN(epochs=args["epochs"], args=args, loss=loss)
-        elif args["model"] == 'Equivariant_CNN':
-            model = Equivariant_CNN(epochs=args["epochs"], args=args, loss=loss)
-            mm_0 = MotifMirrorGradientBleeding(0, assign_bias=True)
-            mm_1 = MotifMirrorGradientBleeding(2, assign_bias=True)
-        elif "SeqModel" in args["model"]:
+        if "SeqModel" in args["model"]:
             model = SeqModel(epochs=args["epochs"], args=args, loss=loss)
         elif "Attention" in args["model"]:
             model = Attention(epochs=args["epochs"], args=args, loss=loss)
@@ -84,8 +67,8 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
 
         # Train
         if args["model"] != "Random_Guess":
-            model.fit(X_train, tflearn.data_utils.to_categorical(Y_train, 2),
-                      validation_data=(X_val, tflearn.data_utils.to_categorical(Y_val, 2)),
+            model.fit(X_train, to_categorical(Y_train, 2),
+                      validation_data=(X_val, to_categorical(Y_val, 2)),
                       epochs=args["epochs"],
                       batch_size=args["batch_size"],
                       callbacks=callbacks)
@@ -181,9 +164,9 @@ def reinforce_train(args,logger,
 
 
         model.fit(x=x_train,
-                  y=tflearn.data_utils.to_categorical(Y_train, 2),
+                  y=to_categorical(Y_train, 2),
                   validation_data=(x_val,
-                                   tflearn.data_utils.to_categorical(Y_val, 2)),
+                                   to_categorical(Y_val, 2)),
                   epochs=args["epochs"],
                   batch_size=args["batch_size"],
                   callbacks=callbacks)
