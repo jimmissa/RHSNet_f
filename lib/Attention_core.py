@@ -2,9 +2,8 @@
 # @Software: PyCharm
 
 import keras.backend as K
-from keras.engine.topology import Layer
+from tensorflow.keras.layers import Layer
 import numpy as np
-import tflearn
 from dataset.data_utils import *
 
 class Multiheads_Attention(Layer):
@@ -141,27 +140,3 @@ class Multiheads_Attention(Layer):
         -1, K.shape(O_seq)[1], self.output_dim))  # O_seq.shape=[,Q_sequence_length,self.multiheads*self.head_dim]
         O_seq = self.Mask(O_seq, Q_len, 'mul')
         return O_seq
-
-from lib.function import *
-from keras.models import Model
-from sklearn.svm import SVC
-def Reinforce_Training(args,
-                       model,
-                       X_train,Y_train,X_test,
-                       X_Pseudo_train,X_Pseudo_test):
-    layer_name = get_feature_layer_name(model)
-    final_layer = Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
-
-    #Train SVM
-    train_out = np.squeeze(final_layer.predict(X_train))
-    train_features = np.concatenate((train_out,X_Pseudo_train),axis=1)
-    svm = SVC(gamma="auto", C=1)
-    svm.fit(train_features, Y_train)
-
-    #Valid
-    test_out = np.squeeze(final_layer.predict(X_test))
-    test_features = np.concatenate((test_out,X_Pseudo_test),axis=1)
-    predictions = svm.predict(test_features)
-    predictions = (tflearn.data_utils.to_categorical(predictions, 2))
-
-    return model, svm, predictions
