@@ -6,7 +6,6 @@ from dataset.data_utils import *
 from lib.CNN_core import *
 from lib.Attention_core import *
 from lib.evaluation import *
-from lib.vis import *
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import KFold
 def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
