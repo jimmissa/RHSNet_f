@@ -2,7 +2,6 @@ import types,random
 import numpy as np
 from lib.CNN_core import *
 from lib.Attention_core import *
-from lib.loss import get_loss_function
 from keras.models import Sequential,Model
 from keras.layers import concatenate,Conv1D,Lambda,MaxPool1D,GlobalMaxPool1D,Dense,AveragePooling1D
 from keras.layers import BatchNormalization
