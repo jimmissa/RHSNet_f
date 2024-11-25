@@ -3,7 +3,6 @@
 from lib.classification_models import *
 from lib.function import *
 from dataset.data_utils import *
-from lib.CNN_core import *
 from lib.Attention_core import *
 from lib.evaluation import *
 from keras.callbacks import EarlyStopping
@@ -55,13 +54,7 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
         loss = get_loss_function(args)
 
         # Model
-        if args["model"] == 'CNN':
-            model = CNN(epochs=args["epochs"], args=args, loss=loss)
-        elif args["model"] == 'Equivariant_CNN':
-            model = Equivariant_CNN(epochs=args["epochs"], args=args, loss=loss)
-            mm_0 = MotifMirrorGradientBleeding(0, assign_bias=True)
-            mm_1 = MotifMirrorGradientBleeding(2, assign_bias=True)
-        elif "SeqModel" in args["model"]:
+        if "SeqModel" in args["model"]:
             model = SeqModel(epochs=args["epochs"], args=args, loss=loss)
         elif "Attention" in args["model"]:
             model = Attention(epochs=args["epochs"], args=args, loss=loss)
