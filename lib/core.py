@@ -7,6 +7,7 @@ from lib.Attention_core import *
 from lib.evaluation import *
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import KFold
+from tensorflow.keras.utils import to_categorical
 def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
     kf = KFold(n_splits=args["folds"])
     Sn_list, Sp_list, Acc_list, Mcc_list, \
@@ -65,8 +66,8 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
 
         # Train
         if args["model"] != "Random_Guess":
-            model.fit(X_train, tflearn.data_utils.to_categorical(Y_train, 2),
-                      validation_data=(X_val, tflearn.data_utils.to_categorical(Y_val, 2)),
+            model.fit(X_train, to_categorical(Y_train, 2),
+                      validation_data=(X_val, to_categorical(Y_val, 2)),
                       epochs=args["epochs"],
                       batch_size=args["batch_size"],
                       callbacks=callbacks)
@@ -162,9 +163,9 @@ def reinforce_train(args,logger,
 
 
         model.fit(x=x_train,
-                  y=tflearn.data_utils.to_categorical(Y_train, 2),
+                  y=to_categorical(Y_train, 2),
                   validation_data=(x_val,
-                                   tflearn.data_utils.to_categorical(Y_val, 2)),
+                                   to_categorical(Y_val, 2)),
                   epochs=args["epochs"],
                   batch_size=args["batch_size"],
                   callbacks=callbacks)
