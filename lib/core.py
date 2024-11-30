@@ -5,6 +5,7 @@ from lib.function import *
 from dataset.data_utils import *
 from lib.Attention_core import *
 from lib.evaluation import *
+from lib.loss import get_loss_function
 from keras.callbacks import EarlyStopping
 from sklearn.model_selection import KFold
 from tensorflow.keras.utils import to_categorical
