@@ -7,6 +7,16 @@ root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 data_root = os.path.join(root,'data')
 dataset_root = os.path.join(root,'dataset')
 
+def Human_Science_2019(args):
+
+    root_feature = os.path.join(dataset_root, args["dataset"],
+                                str(args["max_length"]))
+    X     = np.load(os.path.join(root_feature, 'X.npy'))
+    Y     = np.load(os.path.join(root_feature, 'Y.npy'))
+    L     = np.load(os.path.join(root_feature, 'L.npy'))
+
+    return X, Y, L
+
 def Split_Train_Val_Test_Set(X,Y,L,train_index,test_index):
     val_index = np.random.choice(train_index,size=int(0.1*len(train_index)),replace=False)
     train_index_new = np.array([t for t in train_index if t not in val_index])
