@@ -8,8 +8,7 @@ Usage: train <json_file>
 import docopt
 from dataset.CHIP_utils import CHIP_seq_hg38
 from lib.core import *
-from dataset.data_utils import _26_Population,Human_Science_2019,\
-    Nature_Genetics_2008,Nature_2020,Mouse_Cell_2016
+from dataset.data_utils import Human_Science_2019
 import tensorflow as tf
 from keras import backend as K
 
