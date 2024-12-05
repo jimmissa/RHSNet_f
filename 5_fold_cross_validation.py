@@ -45,7 +45,6 @@ def train(args, config):
     for trail in range(args["trails"]):
         #Reset the memory
         K.clear_session()
-        tf.reset_default_graph()
         trail_start_time = time.time()
         logger.info("\n => Trail {} \n".format(trail + 1))
         if not args["reinforce_train"]:
