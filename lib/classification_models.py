@@ -5,6 +5,7 @@ from keras.models import Sequential,Model
 from keras.layers import concatenate,Conv1D,Lambda,MaxPool1D,GlobalMaxPool1D,Dense,AveragePooling1D
 from keras.layers import BatchNormalization
 from keras.layers import Input,Flatten,Bidirectional,GRU,Embedding
+from keras.layers import MultiHeadAttention
 
 from keras.regularizers import l2
 from keras.optimizers import Adam
@@ -44,7 +45,9 @@ def SeqModel(epochs,args, loss):
     x = Bidirectional(GRU(16, return_sequences=True))(x)
 
     if args["attention"]:
-        x = Multiheads_Attention(multiheads=4, head_dim=4, mask_right=False)([x, x, x])
+        attention_layer = MultiHeadAttention(num_heads=4, key_dim=4)
+        x = attention_layer(query=x, value=x, key=x)
+        # x = Multiheads_Attention(multiheads=4, head_dim=4, mask_right=False)([x, x, x]) # old RHSNet code; this self-written code is now available internally in Tensorflow
 
     x = Lambda(lambda x: K.dropout(x, level=args["dp_rate"]))(x)
     x = GlobalMaxPool1D()(x)
