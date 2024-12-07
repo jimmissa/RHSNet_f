@@ -26,7 +26,7 @@ def Save_Model(model,model_name,logger):
         j_file.write(model.to_json())
     logger.info('saving =>{}'.format(model_name + ".json"))
     with open(model_name+".yaml", 'w') as y_file:
-        y_file.write(model.to_yaml())
+        y_file.write(model.to_json())
     logger.info('saving =>{}'.format(model_name+".yaml"))
     model.save_weights(model_name+".h5")
     logger.info('saving =>{}'.format(model_name+".h5"))
