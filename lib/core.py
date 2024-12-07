@@ -1,4 +1,4 @@
-# @Author  : Yu Li & Siyuan Chen
+F# @Author  : Yu Li & Siyuan Chen
 # @Software: PyCharm
 from lib.classification_models import *
 from lib.function import *
@@ -41,7 +41,7 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
         num_hot, num_cold = Log_num_data(logger=logger, Y_train=Y_train, Y_test=Y_test)
 
         # Metrixs & logs
-        es = EarlyStopping(monitor='val_acc', patience=4)  # TODO 4
+        es = EarlyStopping(monitor='val_accuracy', patience=4)  # TODO 4
         log = get_log(args=args)
         loss = get_loss_function(args)
 
@@ -137,7 +137,7 @@ def reinforce_train(args,logger,
         num_hot, num_cold = Log_num_data(logger=logger, Y_train=Y_train, Y_test=Y_test)
 
         # Metrixs & logs
-        es = EarlyStopping(monitor='val_acc', patience=4)  # TODO 4
+        es = EarlyStopping(monitor='val_accuracy', patience=4)  # TODO 4
         log = get_log(args=args)
         loss = get_loss_function(args)
 
