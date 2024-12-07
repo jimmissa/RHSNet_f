@@ -97,7 +97,9 @@ def Ensemble_SeqModel(epochs,args, loss):
     x = Bidirectional(GRU(16, return_sequences=True))(x)
 
     if args["attention"]:
-        x = Multiheads_Attention(multiheads=4, head_dim=4, mask_right=False)([x, x, x])
+        attention_layer = MultiHeadAttention(num_heads=4, key_dim=4)
+        x = attention_layer(query=x, value=x, key=x)
+        # x = Multiheads_Attention(multiheads=4, head_dim=4, mask_right=False)([x, x, x])
     x = Lambda(lambda x: K.dropout(x, level=args["dp_rate"]))(x)
     x = GlobalMaxPool1D()(x)
     feature_seq = Dense(16, activation='relu')(x)
@@ -162,7 +164,9 @@ def Attention(epochs,args, loss):
     x = Lambda(lambda x: K.dropout(x, level=args["dp_rate"]))(x)
     x = MaxPool1D(pool_size=4)(x)
 
-    x = Multiheads_Attention(multiheads=8, head_dim=8, mask_right=False)([x, x, x])
+    attention_layer = MultiHeadAttention(num_heads=8, key_dim=8)
+    x = attention_layer(query=x, value=x, key=x)
+    # x = Multiheads_Attention(multiheads=8, head_dim=8, mask_right=False)([x, x, x])
     x = GlobalMaxPool1D()(x)
     out = Dense(2, activation="softmax")(x)
 
