@@ -193,6 +193,27 @@ def Classification_Accuracy_Distribution(args,result_filename,logger,interval=10
            np.array(Precision_list),np.array(F1_list), \
            eval_list
 
+def Get_Accuracy(TP, TN, FP, FN):
+    Sn = TP / (TP + FN)
+    Sp = TN / (TN + FP)
+    Acc = (TP + TN) / (TP + TN + FP + FN)
+    if (TP + FP)==0 or (TP + FN)==0 or (TN + FP)==0 or (TN + FN)==0:
+        MCC = -1
+    else:
+        MCC = ((TP * TN) - (FP * FN)) / ((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN)) ** 0.5
+    Recall = TP / (TP + FN)
+
+    if (TP + FP)==0:
+        Precision = 0
+    else:
+        Precision = TP / (TP + FP)
+    if Precision==0 and Recall == 0:
+        F1 = 0
+    else:
+        F1 = 2 * (Precision * Recall)/(Precision + Recall)
+
+    return Sn, Sp, Acc, MCC, Recall, Precision, F1
+
 def Log_AVG_k_folds(Sn_list, Sp_list, Acc_list,Mcc_list,Recall_list,Precision_list,F1_list,logger):
     Sn_avg = np.mean(np.array(Sn_list))
     Sp_avg = np.mean(np.array(Sp_list))
