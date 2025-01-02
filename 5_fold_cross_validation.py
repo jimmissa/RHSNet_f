@@ -53,7 +53,7 @@ def train(args, config):
                                         best_F1_Score,
                                         final_result)
         else:
-            X_CHIPseq, Y_CHIPseq = CHIP_seq_hg38(args)
+            X_CHIPseq, Y_CHIPseq = np.load('X_track.npy'), np.load('Y_track.npy')
             best_F1_Score, final_result = reinforce_train(args,
                                         logger,
                                         X, Y, L,
