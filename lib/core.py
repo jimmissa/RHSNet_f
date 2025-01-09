@@ -46,7 +46,9 @@ def k_fold_train(args,logger,X,Y,L,best_F1_Score,final_result):
         loss = get_loss_function(args)
 
         # Model
-        if "SeqModel" in args["model"]:
+        if args["model"] == 'CNN':
+            model = CNN(epochs=args["epochs"], args=args, loss=loss)
+        elif "SeqModel" in args["model"]:
             model = SeqModel(epochs=args["epochs"], args=args, loss=loss)
         elif "Attention" in args["model"]:
             model = Attention(epochs=args["epochs"], args=args, loss=loss)
